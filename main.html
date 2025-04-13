@@ -169,14 +169,14 @@
 
         try {
           // Check if the forked repo exists
-          await axios.get(`https://api.github.com/repos/${username}/B.M.B-XMD`);
+          await axios.get(`https://api.github.com/repos/${username}/ALPHA-MD`);
 
           // Redirect to Heroku deployment
-          location.replace(`https://dashboard.heroku.com/new?template=https://github.com/${username}/B.M.B-XMD`);
+          location.replace(`https://dashboard.heroku.com/new?template=https://github.com/${username}/ALPHA-MD`);
         } catch (error) {
           if (error.response && error.response.status === 404) {
             alert("You haven't forked the main repo. Tap OK to fork it.");
-            window.open('https://github.com/bmb200/B.M.B-XMD/fork', '_blank');
+            window.open('https://github.com/keithkeizzah/ALPHA-MD/fork', '_blank');
           } else {
             alert("An error occurred. Please try again.");
           }
