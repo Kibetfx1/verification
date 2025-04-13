@@ -2,84 +2,191 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>𝐊𝐄𝐈𝐓𝐇 𝐌𝐃</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BMB XMD Verification Check</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+
   <style>
+    /* Global Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
     body {
       display: flex;
-      flex-direction: column;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       height: 100vh;
-      margin: 0;
-      background-image:url("https://telegra.ph/file/6a0a329aaa839cb32d2b8.jpg"); /* set the background image*/
+      background: linear-gradient(45deg, #ff416c, #ff4b2b, #ff9800, #ffcc00);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
+    }
 
-    .btn {
-      --color: #e5f5f1;
-      --color2: rgb(0, 0, 0);
-      width: 200px;
-      padding: 0.8em 1.75em;
-      background-color: green;
-      border-radius: 6px;
-      border: .3px solid var(--color);
-      transition: .5s;
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Container */
+    .container {
+      background: rgba(0, 0, 0, 0.85);
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .title {
+      color: #ffffff;
+      font-size: 24px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Input Field */
+    .input-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .input-container input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 2px solid #ff9800;
+      font-size: 16px;
+      outline: none;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .input-container input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .input-container input:focus {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: #ffcc00;
+    }
+
+    /* Cool Button */
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      background: linear-gradient(45deg, #ff416c, #ff4b2b);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: 0.3s ease-in-out;
       position: relative;
       overflow: hidden;
-      cursor: pointer;
-      z-index: 1;
-      font-weight: 300;
-      font-size: 17px;
-      font-family: 'Roboto', 'Segoe UI', sans-serif;
-      text-transform: uppercase;
-      color: var(--color);
-      margin-bottom: 24px;
     }
 
-    .btn::after, .btn::before {
-      content: '';
-      display: block;
-      height: 100%;
-      width: 100%;
-      transform: skew(90deg) translate(-50%, -50%);
+    button:hover {
+      background: linear-gradient(45deg, #ff4b2b, #ff416c);
+      transform: scale(1.05);
+    }
+
+    button i {
+      margin-right: 8px;
+    }
+
+    button:disabled {
+      background: gray;
+      cursor: not-allowed;
+    }
+
+    /* Button Ripple Effect */
+    button::after {
+      content: "";
       position: absolute;
-      inset: 50%;
-      left: 25%;
-      z-index: -1;
-      transition: .5s ease-out;
-      background-color: var(--color);
+      width: 300%;
+      height: 300%;
+      top: 50%;
+      left: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transition: transform 0.5s ease;
+      transform: translate(-50%, -50%) scale(0);
+      border-radius: 50%;
     }
 
-    .btn::before {
-      top: -50%;
-      left: -25%;
-      transform: skew(90deg) rotate(180deg) translate(-50%, -50%);
+    button:active::after {
+      transform: translate(-50%, -50%) scale(1);
     }
 
-    .btn:hover::before {
-      transform: skew(45deg) rotate(180deg) translate(-50%, -50%);
-    }
-
-    .btn:hover::after {
-      transform: skew(45deg) translate(-50%, -50%);
-    }
-
-    .btn:hover {
-      color: var(--color2);
-    }
-
-    .btn:active {
-      filter: brightness(.7);
-      transform: scale(.98);
+    /* Responsive */
+    @media screen and (max-width: 480px) {
+      .container {
+        width: 90%;
+      }
     }
   </style>
 </head>
 <body>
 
-  <button onclick="window.open(`/qr`)" class="btn">qr code</button>
-  <button onclick="window.open(`/pair`)" class="btn">pair code</button>
-  <button onclick="window.open(`https://whatsapp.com/channel/0029Vaan9TF9Bb62l8wpoD47`)" class="btn">Wachannel</button>
+  <div class="container">
+    <h2 class="title">BMB XMD VERIFICATION</h2>
+    <form id="usernameForm">
+      <div class="input-container">
+        <input type="text" id="name" name="username" required placeholder="GitHub Username">
+      </div>
+      <button type="button" id="deployButton" onclick="verify();">
+        <i class="fas fa-cloud-upload-alt"></i> Deploy
+      </button>
+    </form>
+  </div>
 
+  <script>
+    async function verify() {
+      const username = document.getElementById('name').value;
+      const deployButton = document.getElementById("deployButton");
 
-  
+      if (username.length > 0) {
+        deployButton.disabled = true;
+        deployButton.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Verifying...";
+
+        try {
+          // Check if the forked repo exists
+          await axios.get(`https://api.github.com/repos/${username}/B.M.B-XMD`);
+
+          // Redirect to Heroku deployment
+          location.replace(`https://dashboard.heroku.com/new?template=https://github.com/${username}/B.M.B-XMD`);
+        } catch (error) {
+          if (error.response && error.response.status === 404) {
+            alert("You haven't forked the main repo. Tap OK to fork it.");
+            window.open('https://github.com/bmb200/B.M.B-XMD/fork', '_blank');
+          } else {
+            alert("An error occurred. Please try again.");
+          }
+        } finally {
+          deployButton.disabled = false;
+          deployButton.innerHTML = "<i class='fas fa-cloud-upload-alt'></i> Deploy";
+        }
+      }
+    }
+  </script>
+
 </body>
 </html>
