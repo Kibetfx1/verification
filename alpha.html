@@ -3,190 +3,672 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BMB XMD Verification Check</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+  <title>ALPHA-MD Verification Portal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
 
   <style>
-    /* Global Styles */
+    :root {
+      --primary: #00ff9d;
+      --primary-dark: #00c47a;
+      --secondary: #00b8ff;
+      --success: #00ff9d;
+      --danger: #ff3860;
+      --dark: #0d0d0d;
+      --darker: #080808;
+      --light: #f0f0f0;
+      --gray: #666;
+      --card-bg: rgba(15, 15, 15, 0.8);
+      --glow: 0 0 10px rgba(0, 255, 157, 0.5);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --terminal-font: 'JetBrains Mono', monospace;
+      --title-font: 'Rajdhani', sans-serif;
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
     }
 
     body {
+      font-family: var(--terminal-font);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      background: linear-gradient(45deg, #ff416c, #ff4b2b, #ff9800, #ffcc00);
-      background-size: 400% 400%;
-      animation: gradientBG 10s ease infinite;
+      background-color: var(--dark);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(0, 255, 157, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(0, 184, 255, 0.05) 0%, transparent 20%),
+        linear-gradient(to bottom, var(--darker), var(--dark));
+      color: var(--light);
+      line-height: 1.6;
+      overflow-x: hidden;
     }
 
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    .scanlines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 0) 50%,
+          rgba(0, 0, 0, 0.2) 51%,
+          rgba(255, 255, 255, 0) 52%,
+          rgba(255, 255, 255, 0) 100%
+        );
+      background-size: 100% 0.3rem;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.15;
     }
 
-    /* Container */
     .container {
-      background: rgba(0, 0, 0, 0.85);
-      padding: 30px;
-      border-radius: 15px;
-      text-align: center;
       width: 100%;
-      max-width: 400px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(10px);
-    }
-
-    .title {
-      color: #ffffff;
-      font-size: 24px;
-      font-weight: bold;
-      letter-spacing: 1px;
-      margin-bottom: 20px;
-      text-transform: uppercase;
-      animation: fadeIn 1.5s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Input Field */
-    .input-container {
+      max-width: 32rem;
+      padding: 2.5rem;
+      margin: 1rem;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 
+        0 10px 30px -10px rgba(0, 0, 0, 0.5),
+        var(--glow);
+      transform: translateY(0);
+      transition: var(--transition);
+      overflow: hidden;
       position: relative;
-      width: 100%;
+      z-index: 10;
     }
 
-    .input-container input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: 2px solid #ff9800;
-      font-size: 16px;
-      outline: none;
-      text-align: center;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      transition: all 0.3s ease-in-out;
+    .container::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: 
+        radial-gradient(circle, rgba(0, 255, 157, 0.1) 0%, transparent 70%),
+        radial-gradient(circle, rgba(0, 184, 255, 0.1) 0%, transparent 70%);
+      transform: rotate(30deg);
+      z-index: -1;
+      animation: rotateGradient 20s linear infinite;
     }
 
-    .input-container input::placeholder {
-      color: rgba(255, 255, 255, 0.6);
+    @keyframes rotateGradient {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
-    .input-container input:focus {
-      background: rgba(255, 255, 255, 0.2);
-      border-color: #ffcc00;
+    .logo {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+      position: relative;
     }
 
-    /* Cool Button */
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 15px;
-      background: linear-gradient(45deg, #ff416c, #ff4b2b);
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: 0.3s ease-in-out;
+    .logo-icon {
+      width: 4.5rem;
+      height: 4.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--dark);
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      box-shadow: 0 0 20px rgba(0, 255, 157, 0.3);
+      transition: var(--transition);
       position: relative;
       overflow: hidden;
     }
 
-    button:hover {
-      background: linear-gradient(45deg, #ff4b2b, #ff416c);
-      transform: scale(1.05);
+    .logo-icon::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, transparent, rgba(0, 255, 157, 0.1), transparent);
+      transform: translateX(-100%);
+      transition: var(--transition);
     }
 
-    button i {
-      margin-right: 8px;
+    .logo-icon:hover::before {
+      transform: translateX(100%);
     }
 
-    button:disabled {
-      background: gray;
+    .logo-icon i {
+      font-size: 2rem;
+      color: var(--primary);
+    }
+
+    .title {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .title h1 {
+      font-family: var(--title-font);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
+    }
+
+    .title p {
+      font-size: 0.875rem;
+      color: var(--gray);
+      max-width: 80%;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 1.75rem;
+      position: relative;
+    }
+
+    .input-field {
+      position: relative;
+    }
+
+    .input-field input {
+      width: 100%;
+      padding: 1rem 1rem 1rem 3.5rem;
+      font-size: 0.9375rem;
+      background: rgba(10, 10, 10, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 0.5rem;
+      color: var(--light);
+      transition: var(--transition);
+      outline: none;
+      font-family: var(--terminal-font);
+      letter-spacing: 0.5px;
+    }
+
+    .input-field input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(0, 255, 157, 0.3);
+    }
+
+    .input-field input::placeholder {
+      color: var(--gray);
+      opacity: 0.7;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+      z-index: 10;
+      font-size: 1.2rem;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 1rem;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      border-radius: 0.5rem;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: var(--dark);
+      font-family: var(--title-font);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 15px rgba(0, 255, 157, 0.3);
+      border: 1px solid rgba(0, 255, 157, 0.3);
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 255, 157, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      background: var(--gray);
       cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+      color: var(--dark);
     }
 
-    /* Button Ripple Effect */
-    button::after {
+    .btn-spinner {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .status-message {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      display: none;
+      border-left: 3px solid;
+      background: rgba(10, 10, 10, 0.7);
+    }
+
+    .status-message.success {
+      border-color: var(--success);
+      color: var(--success);
+      display: block;
+    }
+
+    .status-message.error {
+      border-color: var(--danger);
+      color: var(--danger);
+      display: block;
+    }
+
+    .footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--gray);
+      opacity: 0.7;
+    }
+
+    .tooltip {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .tooltip:hover {
+      color: var(--secondary);
+    }
+
+    .tooltip-text {
+      visibility: hidden;
+      width: 220px;
+      background-color: var(--darker);
+      color: var(--light);
+      text-align: center;
+      border-radius: 0.25rem;
+      padding: 0.75rem;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 0.75rem;
+      border: 1px solid rgba(0, 255, 157, 0.1);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .tooltip-text::after {
       content: "";
       position: absolute;
-      width: 300%;
-      height: 300%;
-      top: 50%;
+      top: 100%;
       left: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      transition: transform 0.5s ease;
-      transform: translate(-50%, -50%) scale(0);
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: var(--darker) transparent transparent transparent;
+    }
+
+    .tooltip:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* Terminal-like blinking cursor effect */
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 0.5rem;
+      height: 1.2rem;
+      background: var(--primary);
+      margin-left: 0.2rem;
+      vertical-align: middle;
+      animation: blink 1s step-end infinite;
+    }
+
+    /* GitHub corner ribbon */
+    .github-corner {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 80px;
+      height: 80px;
+      overflow: hidden;
+      z-index: 20;
+    }
+
+    .github-corner svg {
+      fill: var(--primary);
+      color: var(--dark);
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 120px;
+      height: 120px;
+      transform: rotate(45deg) translate(20px, -30px);
+      transition: var(--transition);
+    }
+
+    .github-corner:hover svg {
+      fill: var(--secondary);
+      transform: rotate(45deg) translate(15px, -25px) scale(1.05);
+    }
+
+    /* Particle background */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      background: var(--primary);
       border-radius: 50%;
+      opacity: 0.5;
+      animation: float linear infinite;
     }
 
-    button:active::after {
-      transform: translate(-50%, -50%) scale(1);
+    @keyframes float {
+      0% { transform: translateY(0) translateX(0); opacity: 0; }
+      50% { opacity: 0.8; }
+      100% { transform: translateY(-100vh) translateX(20px); opacity: 0; }
     }
 
-    /* Responsive */
-    @media screen and (max-width: 480px) {
+    /* Responsive adjustments */
+    @media (max-width: 640px) {
       .container {
-        width: 90%;
+        padding: 1.75rem;
+        border-radius: 0.25rem;
       }
+      
+      .title h1 {
+        font-size: 1.5rem;
+      }
+      
+      .logo-icon {
+        width: 3.5rem;
+        height: 3.5rem;
+      }
+    }
+
+    /* Glitch effect on hover */
+    .glitch {
+      position: relative;
+    }
+
+    .glitch::before, .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.8;
+    }
+
+    .glitch:hover::before {
+      animation: glitch-effect 3s infinite linear alternate-reverse;
+      color: var(--secondary);
+      z-index: -2;
+    }
+
+    .glitch:hover::after {
+      animation: glitch-effect 2s infinite linear alternate-reverse;
+      color: var(--danger);
+      z-index: -1;
+    }
+
+    @keyframes glitch-effect {
+      0% { transform: translate(0); }
+      20% { transform: translate(-3px, 3px); }
+      40% { transform: translate(-3px, -3px); }
+      60% { transform: translate(3px, 3px); }
+      80% { transform: translate(3px, -3px); }
+      100% { transform: translate(0); }
     }
   </style>
 </head>
 <body>
-
+  <!-- Particle background -->
+  <div class="particles" id="particles"></div>
+  
+  <!-- CRT scanlines effect -->
+  <div class="scanlines"></div>
+  
   <div class="container">
-    <h2 class="title">BMB XMD VERIFICATION</h2>
-    <form id="usernameForm">
-      <div class="input-container">
-        <input type="text" id="name" name="username" required placeholder="GitHub Username">
+    <!-- GitHub corner ribbon -->
+    <a href="https://github.com/keithkeizzah/ALPHA-MD" class="github-corner" aria-label="View source on GitHub" target="_blank">
+      <svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
+      </svg>
+    </a>
+    
+    <div class="logo">
+      <div class="logo-icon">
+        <i class="fas fa-terminal"></i>
       </div>
-      <button type="button" id="deployButton" onclick="verify();">
-        <i class="fas fa-cloud-upload-alt"></i> Deploy
+    </div>
+    
+    <div class="title">
+      <h1 class="glitch" data-text="ALPHA-MD">ALPHA-MD</h1>
+      <p>Enter your GitHub username to verify and deploy your instance<span class="cursor"></span></p>
+    </div>
+    
+    <form id="verificationForm">
+      <div class="form-group">
+        <div class="input-field">
+          <i class="fab fa-github input-icon"></i>
+          <input type="text" id="githubUsername" name="username" required placeholder="GitHub Username">
+          <span class="tooltip">
+            <i class="fas fa-question-circle"></i>
+            <span class="tooltip-text">Make sure you've forked the main repository before verifying</span>
+          </span>
+        </div>
+      </div>
+      
+      <button type="button" id="verifyBtn" class="btn">
+        <i class="fas fa-lock-open"></i>
+        <span>Verify & Deploy</span>
       </button>
+      
+      <div id="statusMessage" class="status-message"></div>
     </form>
+    
+    <div class="footer">
+      <p>© 2023 ALPHA-MD | Secure Deployment Portal</p>
+    </div>
   </div>
 
   <script>
-    async function verify() {
-      const username = document.getElementById('name').value;
-      const deployButton = document.getElementById("deployButton");
-
-      if (username.length > 0) {
-        deployButton.disabled = true;
-        deployButton.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Verifying...";
-
-        try {
-          // Check if the forked repo exists
-          await axios.get(`https://api.github.com/repos/${username}/ALPHA-MD`);
-
-          // Redirect to Heroku deployment
-          location.replace(`https://dashboard.heroku.com/new?template=https://github.com/${username}/ALPHA-MD`);
-        } catch (error) {
-          if (error.response && error.response.status === 404) {
-            alert("You haven't forked the main repo. Tap OK to fork it.");
-            window.open('https://github.com/keithkeizzah/ALPHA-MD/fork', '_blank');
-          } else {
-            alert("An error occurred. Please try again.");
-          }
-        } finally {
-          deployButton.disabled = false;
-          deployButton.innerHTML = "<i class='fas fa-cloud-upload-alt'></i> Deploy";
-        }
+    document.addEventListener('DOMContentLoaded', () => {
+      // Create particles
+      const particlesContainer = document.getElementById('particles');
+      const particleCount = 30;
+      
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        
+        // Random properties
+        const size = Math.random() * 5 + 1;
+        const posX = Math.random() * window.innerWidth;
+        const duration = Math.random() * 15 + 10;
+        const delay = Math.random() * 5;
+        
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${posX}px`;
+        particle.style.bottom = `-10px`;
+        particle.style.animationDuration = `${duration}s`;
+        particle.style.animationDelay = `${delay}s`;
+        
+        // Random color between primary and secondary
+        particle.style.background = Math.random() > 0.5 ? 'var(--primary)' : 'var(--secondary)';
+        
+        particlesContainer.appendChild(particle);
       }
-    }
+      
+      const verifyBtn = document.getElementById('verifyBtn');
+      const githubUsername = document.getElementById('githubUsername');
+      const statusMessage = document.getElementById('statusMessage');
+      
+      // Add input validation
+      githubUsername.addEventListener('input', () => {
+        statusMessage.style.display = 'none';
+      });
+      
+      // Handle form submission
+      verifyBtn.addEventListener('click', async () => {
+        const username = githubUsername.value.trim();
+        
+        if (!username) {
+          showStatus('ERROR: Please enter your GitHub username', 'error');
+          githubUsername.focus();
+          return;
+        }
+        
+        try {
+          // Update button state
+          verifyBtn.disabled = true;
+          verifyBtn.innerHTML = `<i class="fas fa-spinner btn-spinner"></i><span>Verifying...</span>`;
+          
+          // Check if the repository exists
+          const response = await axios.get(
+            `https://api.github.com/repos/${username}/ALPHA-MD`,
+            { timeout: 10000 }
+          );
+          
+          // If repository exists, redirect to deployment
+          showStatus('SUCCESS: Verification complete! Redirecting to deployment...', 'success');
+          
+          // Terminal-like typing effect for status message
+          typeStatusMessage('Initializing deployment sequence...', () => {
+            setTimeout(() => {
+              window.location.href = `https://dashboard.heroku.com/new?template=https://github.com/${username}/ALPHA-MD`;
+            }, 1000);
+          });
+          
+        } catch (error) {
+          verifyBtn.disabled = false;
+          verifyBtn.innerHTML = `<i class="fas fa-lock-open"></i><span>Verify & Deploy</span>`;
+          
+          if (error.response && error.response.status === 404) {
+            const shouldFork = confirm('Repository not found. You need to fork the main ALPHA-MD repository first. Would you like to fork it now?');
+            if (shouldFork) {
+              window.open('https://github.com/keithkeizzah/ALPHA-MD/fork', '_blank');
+              showStatus('INFO: Please fork the repository and try again', 'error');
+            }
+          } else if (error.code === 'ECONNABORTED') {
+            showStatus('ERROR: Connection timeout. Check your network', 'error');
+          } else {
+            showStatus('ERROR: Verification failed. Try again', 'error');
+            console.error('Verification error:', error);
+          }
+        }
+      });
+      
+      // Helper function to show status messages
+      function showStatus(message, type) {
+        statusMessage.textContent = message;
+        statusMessage.className = `status-message ${type}`;
+      }
+      
+      // Terminal-like typing effect
+      function typeStatusMessage(message, callback) {
+        let i = 0;
+        statusMessage.textContent = '';
+        statusMessage.className = 'status-message success';
+        statusMessage.style.display = 'block';
+        
+        const typingInterval = setInterval(() => {
+          if (i < message.length) {
+            statusMessage.textContent += message.charAt(i);
+            i++;
+          } else {
+            clearInterval(typingInterval);
+            if (callback) callback();
+          }
+        }, 30);
+      }
+      
+      // Add keyboard support
+      githubUsername.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          verifyBtn.click();
+        }
+      });
+      
+      // Add focus effect
+      githubUsername.addEventListener('focus', () => {
+        document.querySelector('.input-icon').style.color = 'var(--primary)';
+      });
+      
+      githubUsername.addEventListener('blur', () => {
+        document.querySelector('.input-icon').style.color = 'var(--gray)';
+      });
+    });
   </script>
-
 </body>
 </html>
