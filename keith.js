@@ -12,7 +12,10 @@ require('events').EventEmitter.defaultMaxListeners = 500;
 //res.sendFile(__path + '/pair.html')
 //})
 app.use('/',async (req, res, next) => {
-res.sendFile(__path + '/main.html')
+res.sendFile(__path + '/alpha.html')
+})
+app.use('/keith',async (req, res, next) => {
+res.sendFile(__path + '/keith.html')
 })
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
